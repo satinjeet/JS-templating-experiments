@@ -2,9 +2,20 @@
 console.log('executing test cases ::');
 
 describe('Template test cases Suite 1 :: simple string parsing', function() {
-  return it('will return me a simple string', function() {
+  it('will return me a simple string', function() {
     var string;
-    string = '<div>Simple Div</div>';
-    return expect(Template.parse(string)).toBe(string);
+    string = '<div>Simple Div</div>\n<div>?_ value _? Simple Div 2</div>';
+    return expect(Template.parse(string)({
+      value: 10
+    })).toBe('<div>Simple Div</div> <div>10 Simple Div 2</div>');
+  });
+  return it('will return me a complex structure string', function() {
+    var _t, string;
+    string = '<div>\n    complex Div : ?_ name _? ?_ last_name _?\n    <div>Simple Div 2</div>\n<div>';
+    _t = Template.parse(string);
+    return expect(_t({
+      name: 'Ass',
+      last_name: 'Lame'
+    })).toBe('<div>     complex Div : Ass Lame     <div>Simple Div 2</div> <div>');
   });
 });
