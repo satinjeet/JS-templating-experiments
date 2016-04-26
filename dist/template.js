@@ -33,7 +33,7 @@ Template = (function() {
         strB[i] = "p.push('" + lex + "');";
       }
     }
-    fn = new Function('obj', "var p = []; with (obj) { " + (strB.join('\n')) + " } return p.join('').trim();");
+    fn = new Function('obj', "var p = []; with (obj || this) { " + (strB.join('\n')) + " } return p.join('').trim();");
     if (data) {
       return fn(data);
     } else {

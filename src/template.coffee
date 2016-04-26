@@ -40,7 +40,7 @@ class Template
         # 
         fn = new Function 'obj', "
             var p = [];
-            with (obj) {
+            with (obj || this) {
                 #{strB.join '\n'}
             }
             return p.join('').trim();

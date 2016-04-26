@@ -6,6 +6,12 @@ console.log('executing test cases ::');
 wrapperObject = this;
 
 describe('Template test cases Suite 1 :: simple string parsing', function() {
+  it('simple string, no JS', function() {
+    var _t, string;
+    string = '<div>Simple Div</div>\n<div>Simple Div 2</div>';
+    _t = Template.parse(string);
+    return expect(_t()).toBe('<div>Simple Div</div><div>Simple Div 2</div>');
+  });
   it('will return me a simple string', function() {
     var string;
     string = '<div>Simple Div</div>\n<div>?_ value _? Simple Div 2</div>';

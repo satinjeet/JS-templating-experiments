@@ -3,6 +3,16 @@ wrapperObject = @
 
 describe 'Template test cases Suite 1 :: simple string parsing', ->
 
+    it 'simple string, no JS', ->
+
+        string = '''
+            <div>Simple Div</div>
+            <div>Simple Div 2</div>
+        '''
+        _t = Template.parse(string)
+        expect _t()
+            .toBe '<div>Simple Div</div><div>Simple Div 2</div>'
+
     it 'will return me a simple string', ->
 
         string = '''
