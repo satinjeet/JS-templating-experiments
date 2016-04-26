@@ -10,11 +10,21 @@ Template = (function() {
   function Template() {}
 
   Template.parse = function(string) {
-    var fn, strB;
+    var fn, match, strB, variableRegex, vars;
     console.log(string);
-    strB = string.replace(/[\r\t\n]/g, ' ').replace(/\?_(.*?)_\?/g, '\' + $1 + \'');
+    vars = [];
+    variableRegex = /\?__[\ ]?(.*?)[\ ]?_\?/g;
+    while (match = variableRegex.exec(string)) {
+      vars.push(match[1]);
+    }
+    strB = string.replace(variableRegex, '').replace(/[\r\t\n]/g, ' ').replace(/\?_(.*?)_\?/g, '\' + $1 + \'').trim();
     strB = "'" + strB + "'";
-    fn = new Function('obj', "var result = \"\"; with (obj) { result = " + strB + "; } return result;");
+    if (vars.length) {
+      vars = "var " + (vars.join(',')) + ";";
+    } else {
+      vars = '';
+    }
+    fn = new Function('obj', "var result = \"\"; with (obj) { " + vars + " result = " + strB + "; } return result;");
     console.log(fn);
     return fn;
   };

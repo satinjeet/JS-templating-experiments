@@ -9,7 +9,7 @@ describe('Template test cases Suite 1 :: simple string parsing', function() {
       value: 10
     })).toBe('<div>Simple Div</div> <div>10 Simple Div 2</div>');
   });
-  return it('will return me a complex structure string', function() {
+  it('will return me a complex structure string', function() {
     var _t, string;
     string = '<div>\n    complex Div : ?_ name _? ?_ last_name _?\n    <div>Simple Div 2</div>\n<div>';
     _t = Template.parse(string);
@@ -17,5 +17,11 @@ describe('Template test cases Suite 1 :: simple string parsing', function() {
       name: 'Ass',
       last_name: 'Lame'
     })).toBe('<div>     complex Div : Ass Lame     <div>Simple Div 2</div> <div>');
+  });
+  return it('declaring new var, printing it', function() {
+    var _t, string;
+    string = '?__ someVar = 20_?\n?__ someVar2 _?\n?__ someVar3 _?\n<h2>?_ someVar _?</h2>';
+    _t = Template.parse(string);
+    return expect(_t({})).toBe('<h2>20</h2>');
   });
 });

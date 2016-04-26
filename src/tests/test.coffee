@@ -24,3 +24,15 @@ describe 'Template test cases Suite 1 :: simple string parsing', ->
         _t = Template.parse(string)
         expect _t name: 'Ass', last_name: 'Lame'
             .toBe '<div>     complex Div : Ass Lame     <div>Simple Div 2</div> <div>'
+
+    it 'declaring new var, printing it', ->
+        string = '''
+            ?__ someVar = 20_?
+            ?__ someVar2 _?
+            ?__ someVar3 _?
+            <h2>?_ someVar _?</h2>
+        '''
+
+        _t = Template.parse string
+        expect _t {}
+            .toBe '<h2>20</h2>'
