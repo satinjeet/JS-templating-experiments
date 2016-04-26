@@ -4,42 +4,47 @@
 ###
 class Template
 
-    @parse: (string)->
-        console.log string
+    @parse: (string, data = undefined)->
+        # console.log string
 
-        ## extract variable definitions
+        ## extract JS expressions
         #
         vars = []
-        variableRegex = /\?__[\ ]?(.*?)[\ ]?_\?/g
+        variableRegex = /\?__[\ ]?(.*?)[\ ]?__\?/g
         while match = variableRegex.exec string
-            vars.push match[1]
+            string = string.replace match[0], "??#{match[1]}"
+            variableRegex.lastIndex = match.index + match[1].length
 
         strB = string
-            .replace variableRegex, ''
+            .replace /[\n]/g, '..'
             .replace /[\r\t\n]/g, ' '
-            .replace /\?_(.*?)_\?/g, '\' + $1 + \''
+            .replace /\?_\ ?(.*?)\ ?_\?/g, '..?$1..'
             .trim()
-        strB = "'#{strB}'"
 
+        strB = strB.split '..'
+        for lex, i in strB
+            if lex.indexOf('??') is 0
+                strB[i] = lex.replace '??', ''
 
-        # prepare variables
-        
-        if vars.length
-            vars = "var #{vars.join ','};"
-        else
-            vars = ''
+            else if lex.indexOf('?') is 0
+                lex = lex.replace '?', ''
+                strB[i] = "p.push(#{lex});"
+
+            else
+                strB[i] = "p.push('#{lex}');"
+
+        strB.join '\n'
 
         # define function
         # 
         fn = new Function 'obj', "
-            var result = \"\";
+            var p = [];
             with (obj) {
-                #{vars}
-                result = #{strB};
+                #{strB.join '\n'}
             }
-            return result;
+            return p.join('').trim();
         "
 
         console.log fn
 
-        return fn
+        return if data then fn(data) else fn

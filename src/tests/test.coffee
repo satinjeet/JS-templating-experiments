@@ -10,7 +10,7 @@ describe 'Template test cases Suite 1 :: simple string parsing', ->
         '''
 
         expect Template.parse(string) value: 10
-            .toBe '<div>Simple Div</div> <div>10 Simple Div 2</div>'
+            .toBe '<div>Simple Div</div><div>10 Simple Div 2</div>'
 
     it 'will return me a complex structure string', ->
 
@@ -23,16 +23,53 @@ describe 'Template test cases Suite 1 :: simple string parsing', ->
 
         _t = Template.parse(string)
         expect _t name: 'Ass', last_name: 'Lame'
-            .toBe '<div>     complex Div : Ass Lame     <div>Simple Div 2</div> <div>'
+            .toBe '<div>    complex Div : Ass Lame    <div>Simple Div 2</div><div>'
 
     it 'declaring new var, printing it', ->
         string = '''
-            ?__ someVar = 20_?
-            ?__ someVar2 _?
-            ?__ someVar3 _?
+            ?__ someVar = 20; __?
+            ?__ var someVar2 __?
+            ?__ var someVar3 __?
             <h2>?_ someVar _?</h2>
         '''
 
         _t = Template.parse string
         expect _t {}
             .toBe '<h2>20</h2>'
+
+    it 'a simple numbered loop', ->
+        string = '''
+            ?__ var limit = 10; __?
+            ?__ for (var i = 0; i < limit; i++) { __?
+                <lame>?_ i _?</lame>
+            ?__ } __?
+        '''
+
+        _t = Template.parse string
+        expect _t {}
+            .toBe '<lame>0</lame>    <lame>1</lame>    <lame>2</lame>    <lame>3</lame>    <lame>4</lame>    <lame>5</lame>    <lame>6</lame>    <lame>7</lame>    <lame>8</lame>    <lame>9</lame>'
+
+    it 'loop on an array', ->
+        string = '''
+            ?__ arr = [0,1,2,3,4,5,6,7,8,9]; __?
+            ?__ for (var i = 0; i < arr.length; i++) { __?
+                <lame>?_ arr[i] _?</lame>
+            ?__ } __?
+        '''
+
+        _t = Template.parse string
+        expect _t {}
+            .toBe '<lame>0</lame>    <lame>1</lame>    <lame>2</lame>    <lame>3</lame>    <lame>4</lame>    <lame>5</lame>    <lame>6</lame>    <lame>7</lame>    <lame>8</lame>    <lame>9</lame>'
+
+    it 'passing and calling functions', ->
+        string = '''
+            ?_ abs(090.990) _?
+        '''
+        string2 = '''
+            ?_ abs(-90.990) _?
+        '''
+
+        expect Template.parse(string, Math)
+            .toBe '90.99'
+        expect Template.parse(string2, Math)
+            .toBe '90.99'

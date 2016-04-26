@@ -7,7 +7,7 @@ describe('Template test cases Suite 1 :: simple string parsing', function() {
     string = '<div>Simple Div</div>\n<div>?_ value _? Simple Div 2</div>';
     return expect(Template.parse(string)({
       value: 10
-    })).toBe('<div>Simple Div</div> <div>10 Simple Div 2</div>');
+    })).toBe('<div>Simple Div</div><div>10 Simple Div 2</div>');
   });
   it('will return me a complex structure string', function() {
     var _t, string;
@@ -16,12 +16,31 @@ describe('Template test cases Suite 1 :: simple string parsing', function() {
     return expect(_t({
       name: 'Ass',
       last_name: 'Lame'
-    })).toBe('<div>     complex Div : Ass Lame     <div>Simple Div 2</div> <div>');
+    })).toBe('<div>    complex Div : Ass Lame    <div>Simple Div 2</div><div>');
   });
-  return it('declaring new var, printing it', function() {
+  it('declaring new var, printing it', function() {
     var _t, string;
-    string = '?__ someVar = 20_?\n?__ someVar2 _?\n?__ someVar3 _?\n<h2>?_ someVar _?</h2>';
+    string = '?__ someVar = 20; __?\n?__ var someVar2 __?\n?__ var someVar3 __?\n<h2>?_ someVar _?</h2>';
     _t = Template.parse(string);
     return expect(_t({})).toBe('<h2>20</h2>');
+  });
+  it('a simple numbered loop', function() {
+    var _t, string;
+    string = '?__ var limit = 10; __?\n?__ for (var i = 0; i < limit; i++) { __?\n    <lame>?_ i _?</lame>\n?__ } __?';
+    _t = Template.parse(string);
+    return expect(_t({})).toBe('<lame>0</lame>    <lame>1</lame>    <lame>2</lame>    <lame>3</lame>    <lame>4</lame>    <lame>5</lame>    <lame>6</lame>    <lame>7</lame>    <lame>8</lame>    <lame>9</lame>');
+  });
+  it('loop on an array', function() {
+    var _t, string;
+    string = '?__ arr = [0,1,2,3,4,5,6,7,8,9]; __?\n?__ for (var i = 0; i < arr.length; i++) { __?\n    <lame>?_ arr[i] _?</lame>\n?__ } __?';
+    _t = Template.parse(string);
+    return expect(_t({})).toBe('<lame>0</lame>    <lame>1</lame>    <lame>2</lame>    <lame>3</lame>    <lame>4</lame>    <lame>5</lame>    <lame>6</lame>    <lame>7</lame>    <lame>8</lame>    <lame>9</lame>');
+  });
+  return it('passing and calling functions', function() {
+    var string, string2;
+    string = '?_ abs(090.990) _?';
+    string2 = '?_ abs(-90.990) _?';
+    expect(Template.parse(string, Math)).toBe('90.99');
+    return expect(Template.parse(string2, Math)).toBe('90.99');
   });
 });

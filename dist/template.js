@@ -9,24 +9,38 @@ var Template;
 Template = (function() {
   function Template() {}
 
-  Template.parse = function(string) {
-    var fn, match, strB, variableRegex, vars;
-    console.log(string);
+  Template.parse = function(string, data) {
+    var fn, i, j, len, lex, match, strB, variableRegex, vars;
+    if (data == null) {
+      data = void 0;
+    }
     vars = [];
-    variableRegex = /\?__[\ ]?(.*?)[\ ]?_\?/g;
+    variableRegex = /\?__[\ ]?(.*?)[\ ]?__\?/g;
     while (match = variableRegex.exec(string)) {
-      vars.push(match[1]);
+      string = string.replace(match[0], "??" + match[1]);
+      variableRegex.lastIndex = match.index + match[1].length;
     }
-    strB = string.replace(variableRegex, '').replace(/[\r\t\n]/g, ' ').replace(/\?_(.*?)_\?/g, '\' + $1 + \'').trim();
-    strB = "'" + strB + "'";
-    if (vars.length) {
-      vars = "var " + (vars.join(',')) + ";";
-    } else {
-      vars = '';
+    strB = string.replace(/[\n]/g, '..').replace(/[\r\t\n]/g, ' ').replace(/\?_\ ?(.*?)\ ?_\?/g, '..?$1..').trim();
+    strB = strB.split('..');
+    for (i = j = 0, len = strB.length; j < len; i = ++j) {
+      lex = strB[i];
+      if (lex.indexOf('??') === 0) {
+        strB[i] = lex.replace('??', '');
+      } else if (lex.indexOf('?') === 0) {
+        lex = lex.replace('?', '');
+        strB[i] = "p.push(" + lex + ");";
+      } else {
+        strB[i] = "p.push('" + lex + "');";
+      }
     }
-    fn = new Function('obj', "var result = \"\"; with (obj) { " + vars + " result = " + strB + "; } return result;");
+    strB.join('\n');
+    fn = new Function('obj', "var p = []; with (obj) { " + (strB.join('\n')) + " } return p.join('').trim();");
     console.log(fn);
-    return fn;
+    if (data) {
+      return fn(data);
+    } else {
+      return fn;
+    }
   };
 
   return Template;
