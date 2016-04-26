@@ -33,9 +33,7 @@ Template = (function() {
         strB[i] = "p.push('" + lex + "');";
       }
     }
-    strB.join('\n');
     fn = new Function('obj', "var p = []; with (obj) { " + (strB.join('\n')) + " } return p.join('').trim();");
-    console.log(fn);
     if (data) {
       return fn(data);
     } else {

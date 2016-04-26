@@ -1,4 +1,5 @@
 console.log 'executing test cases ::'
+wrapperObject = @
 
 describe 'Template test cases Suite 1 :: simple string parsing', ->
 
@@ -37,6 +38,8 @@ describe 'Template test cases Suite 1 :: simple string parsing', ->
         expect _t {}
             .toBe '<h2>20</h2>'
 
+describe 'Template test cases Suite 2 :: More complex structures : Arrays', ->
+
     it 'a simple numbered loop', ->
         string = '''
             ?__ var limit = 10; __?
@@ -61,6 +64,7 @@ describe 'Template test cases Suite 1 :: simple string parsing', ->
         expect _t {}
             .toBe '<lame>0</lame>    <lame>1</lame>    <lame>2</lame>    <lame>3</lame>    <lame>4</lame>    <lame>5</lame>    <lame>6</lame>    <lame>7</lame>    <lame>8</lame>    <lame>9</lame>'
 
+describe 'Template test cases Suite 3 :: More complex structures : Functions', ->
     it 'passing and calling functions', ->
         string = '''
             ?_ abs(090.990) _?
@@ -73,3 +77,16 @@ describe 'Template test cases Suite 1 :: simple string parsing', ->
             .toBe '90.99'
         expect Template.parse(string2, Math)
             .toBe '90.99'
+
+
+    it 'passing and calling functions, different scope', ->
+        string = '''
+            ?_ abs(090.990) _? ?_ Temp.myFunc() _?
+        '''
+
+        wrapperObject.Temp = 
+            myFunc: ->
+                return 'tmp string'
+
+        expect Template.parse(string, Math)
+            .toBe '90.99 tmp string'

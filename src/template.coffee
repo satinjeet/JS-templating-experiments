@@ -15,12 +15,15 @@ class Template
             string = string.replace match[0], "??#{match[1]}"
             variableRegex.lastIndex = match.index + match[1].length
 
+        ## replace variable with tokenization
+        #
         strB = string
             .replace /[\n]/g, '..'
             .replace /[\r\t\n]/g, ' '
             .replace /\?_\ ?(.*?)\ ?_\?/g, '..?$1..'
             .trim()
 
+        ## Start identifying expressions and value outputs
         strB = strB.split '..'
         for lex, i in strB
             if lex.indexOf('??') is 0
@@ -33,8 +36,6 @@ class Template
             else
                 strB[i] = "p.push('#{lex}');"
 
-        strB.join '\n'
-
         # define function
         # 
         fn = new Function 'obj', "
@@ -45,6 +46,6 @@ class Template
             return p.join('').trim();
         "
 
-        console.log fn
+        # console.log fn
 
         return if data then fn(data) else fn
